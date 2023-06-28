@@ -1,0 +1,10 @@
+Debido al tiempo no hemos podido realizar ciertas funciones como el calendario de organización y algunos resultados más exactos en algunas cosas 
+como días de descanso, guías necesarios y poco más, espero que comprendan la situación al haber solo ha sido 2 personas en el equipo 10 gracias de antemano
+
+Para que el codigo pueda funcionar en el visual studio code solo deben darle al triangulo de la esquina superior derecha que se parece al de "reproducir" y el
+codigo andara sin ningun problema
+
+para poder ingresar a la seccion de guias el usuario es "guias" y la contraseña "excursiones"
+para poder ingresar a la seccion de turistas el usuario es "turistas" y la contraseña "turismo"
+y por el ultimo para logistica el usuario es "logistica" y contraseña "materiales"
+"
