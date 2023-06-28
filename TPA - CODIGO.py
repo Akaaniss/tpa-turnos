@@ -1,13 +1,10 @@
 import sys
 import csv
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox
 
 # PARA INGRESAR A LA INTERFAZ DE LA LOGISTICA INGRESAR USERNAME: logistica CONTRASEÑA: abcd
 # EL PROGRAMA YA PERMITE GUARDAR LOS DATOS INGRESADOS POR LOGISTICA EN UN .CSV LLAMADO TURNOS
 # QUE SE GENERA UNA VEZ PRESIONADO EL BOTON "AGREGAR TURNO"
-
-
-
 
 # Ventana del Gerente
 class GerenteWindow(QWidget):
@@ -126,7 +123,7 @@ class TurnosApp(QMainWindow):
 
         self.username_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.login_button = QPushButton("Iniciar sesión")
         self.login_button.clicked.connect(self.login)
 
@@ -165,4 +162,4 @@ if __name__ == "__main__":
     turnos_app = TurnosApp()
     turnos_app.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
