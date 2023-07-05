@@ -1,10 +1,7 @@
 import sys
 import csv
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox
-
-# PARA INGRESAR A LA INTERFAZ DE LA LOGISTICA INGRESAR USERNAME: logistica CONTRASEÑA: abcd
-# EL PROGRAMA YA PERMITE GUARDAR LOS DATOS INGRESADOS POR LOGISTICA EN UN .CSV LLAMADO TURNOS
-# QUE SE GENERA UNA VEZ PRESIONADO EL BOTON "AGREGAR TURNO"
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox, QMessageBox
+from PyQt6.QtCore import Qt
 
 # Ventana del Gerente
 class GerenteWindow(QWidget):
@@ -81,85 +78,103 @@ class LogisticaWindow(QWidget):
         self.guia_table.setItem(row_count, 3, QTableWidgetItem(plan))
         self.guia_table.setItem(row_count, 4, QTableWidgetItem(turno))
 
-        # Limpiar los campos de entrada
-        self.nombre_input.clear()
-        self.rut_input.clear()
-
-        # Guardar los turnos en un archivo CSV
-        self.guardar_turnos_csv()
-
-    def guardar_turnos_csv(self):
-        turnos = []
-
-        # Obtener los datos de la tabla de turnos
-        for row in range(self.guia_table.rowCount()):
-            nombre = self.guia_table.item(row, 0).text()
-            rut = self.guia_table.item(row, 1).text()
-            fecha = self.guia_table.item(row, 2).text()
-            plan = self.guia_table.item(row, 3).text()
-            turno = self.guia_table.item(row, 4).text()
-
-            turno_data = [nombre, rut, fecha, plan, turno]
-            turnos.append(turno_data)
-
-        # Guardar los turnos en un archivo CSV
-        with open("turnos.csv", "w", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerows(turnos)
-
-# Clase principal de la aplicación
 class TurnosApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Sistema de Turnos y Gestión de Personal")
+        self.setWindowTitle("TurnosApp")
         self.setGeometry(200, 200, 500, 500)
 
-        # Widget de inicio de sesión
-        self.login_widget = QWidget(self)
+        self.login_widget = QWidget()
         self.setCentralWidget(self.login_widget)
-
         self.login_layout = QVBoxLayout()
         self.login_widget.setLayout(self.login_layout)
 
         self.username_input = QLineEdit()
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.login_button = QPushButton("Iniciar sesión")
-        self.login_button.clicked.connect(self.login)
 
-        self.login_layout.addWidget(QLabel("Nombre de usuario:"))
+        self.login_button = QPushButton("Iniciar sesión")
+        self.register_button = QPushButton("Registrarse")
+        self.back_button = QPushButton("Volver")
+
+        self.login_button.clicked.connect(self.login)
+        self.register_button.clicked.connect(self.register)
+        self.back_button.clicked.connect(self.back)
+
+        self.login_layout.addWidget(QLabel("Usuario:"))
         self.login_layout.addWidget(self.username_input)
         self.login_layout.addWidget(QLabel("Contraseña:"))
         self.login_layout.addWidget(self.password_input)
         self.login_layout.addWidget(self.login_button)
+        self.login_layout.addWidget(self.register_button)
+        self.login_layout.addWidget(self.back_button)
+
+        self.gerente_window = GerenteWindow()
+        self.ejecutivo_window = EjecutivoWindow()
+        self.logistica_window = LogisticaWindow()
 
     def login(self):
         username = self.username_input.text()
         password = self.password_input.text()
 
-        # Verificar el nombre de usuario y la contraseña para determinar el tipo de usuario
-        if username == "gerente" and password == "1234":
-            self.gerente_window = GerenteWindow()
-            self.setCentralWidget(self.gerente_window)
-        elif username == "ejecutivo" and password == "5678":
-            self.ejecutivo_window = EjecutivoWindow()
-            self.setCentralWidget(self.ejecutivo_window)
-        elif username == "logistica" and password == "abcd":
-            self.logistica_window = LogisticaWindow()
-            self.setCentralWidget(self.logistica_window)
+        if username == "gerente" and password == "gerente123":
+            self.close()
+            self.gerente_window.show()
+        elif username == "ejecutivo" and password == "ejecutivo123":
+            self.close()
+            self.ejecutivo_window.show()
+        elif username == "logistica" and password == "logistica123":
+            self.close()
+            self.logistica_window.show()
         else:
-            # Mostrar un mensaje de error si el nombre de usuario o la contraseña son incorrectos
-            error_label = QLabel("Error: Nombre de usuario o contraseña incorrectos")
-            self.login_layout.addWidget(error_label)
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error de inicio de sesión")
+            error_dialog.setText("Usuario o contraseña incorrectos.")
+            error_dialog.exec()
 
-        self.username_input.clear()
-        self.password_input.clear()
+    def register(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
 
+        if len(password) > 8:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error de registro")
+            error_dialog.setText("La contraseña no puede tener más de 8 caracteres.")
+            error_dialog.exec()
+            return
+
+        if username and password:
+            try:
+                with open('registro_de_cuentas.csv', 'a', newline='', encoding='utf-8-sig') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([username, password])
+            except OSError as e:
+                error_dialog = QMessageBox()
+                error_dialog.setIcon(QMessageBox.Icon.Critical)
+                error_dialog.setWindowTitle("Error de registro")
+                error_dialog.setText("Error al escribir en el archivo CSV.")
+                error_dialog.exec()
+                print(f"Error al escribir en el archivo CSV: {e}")
+                return
+
+            print("Registro exitoso")
+            self.close()
+            self.login_window.show()
+        else:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error de registro")
+            error_dialog.setText("Por favor, ingresa todos los campos requeridos.")
+            error_dialog.exec()
+
+    def back(self):
+        self.close()
+        self.login_widget.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
-    turnos_app = TurnosApp()
-    turnos_app.show()
-
+    window = TurnosApp()
+    window.show()
     sys.exit(app.exec())
