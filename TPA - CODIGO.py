@@ -1,6 +1,6 @@
 import sys
 import csv
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox, QMessageBox,QDateTimeEdit
 from PyQt6.QtCore import Qt
 
 # Ventana del Gerente
@@ -76,7 +76,6 @@ class LogisticaWindow(QWidget):
         self.guia_table.setItem(row_count, 1, QTableWidgetItem(rut))
         self.guia_table.setItem(row_count, 2, QTableWidgetItem(fecha))
         self.guia_table.setItem(row_count, 3, QTableWidgetItem(plan))
-        self.guia_table.setItem(row_count, 4, QTableWidgetItem(turno))
 
 class TurnosApp(QMainWindow):
     def __init__(self):
@@ -92,6 +91,8 @@ class TurnosApp(QMainWindow):
         self.username_input = QLineEdit()
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.birthdate_input = QDateEdit()
+        self.occupation_input = QLineEdit()
 
         self.login_button = QPushButton("Iniciar sesión")
         self.register_button = QPushButton("Registrarse")
@@ -105,6 +106,10 @@ class TurnosApp(QMainWindow):
         self.login_layout.addWidget(self.username_input)
         self.login_layout.addWidget(QLabel("Contraseña:"))
         self.login_layout.addWidget(self.password_input)
+        self.login_layout.addWidget(QLabel("Fecha de Nacimiento:"))
+        self.login_layout.addWidget(self.birthdate_input)
+        self.login_layout.addWidget(QLabel("Ocupación:"))
+        self.login_layout.addWidget(self.occupation_input)
         self.login_layout.addWidget(self.login_button)
         self.login_layout.addWidget(self.register_button)
         self.login_layout.addWidget(self.back_button)
@@ -136,6 +141,8 @@ class TurnosApp(QMainWindow):
     def register(self):
         username = self.username_input.text()
         password = self.password_input.text()
+        birthdate = self.birthdate_input.date().toString(Qt.DateFormat.ISODate)
+        occupation = self.occupation_input.text()
 
         if len(password) > 8:
             error_dialog = QMessageBox()
@@ -145,11 +152,11 @@ class TurnosApp(QMainWindow):
             error_dialog.exec()
             return
 
-        if username and password:
+        if username and password and birthdate and occupation:
             try:
                 with open('registro_de_cuentas.csv', 'a', newline='', encoding='utf-8-sig') as file:
                     writer = csv.writer(file)
-                    writer.writerow([username, password])
+                    writer.writerow([username, password, birthdate, occupation])
             except OSError as e:
                 error_dialog = QMessageBox()
                 error_dialog.setIcon(QMessageBox.Icon.Critical)
@@ -166,15 +173,21 @@ class TurnosApp(QMainWindow):
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Icon.Critical)
             error_dialog.setWindowTitle("Error de registro")
-            error_dialog.setText("Por favor, ingresa todos los campos requeridos.")
+            error_dialog.setText("Por favor, ingresatodos los campos de registro.")
             error_dialog.exec()
 
     def back(self):
-        self.close()
-        self.login_widget.show()
+        self.username_input.clear()
+        self.password_input.clear()
+        self.birthdate_input.setDate(QDate.currentDate())
+        self.occupation_input.clear()
 
-if __name__ == "__main__":
+# Función principal
+def main():
     app = QApplication(sys.argv)
     window = TurnosApp()
     window.show()
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
