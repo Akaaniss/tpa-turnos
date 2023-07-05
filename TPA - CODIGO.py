@@ -32,6 +32,7 @@ class RegistroWindow(QWidget):
         password = self.password_input.text()
 
         # Verificar si el archivo "registro_de_cuentas.csv" existe
+        '''
         try:
             with open("registro_de_cuentas.csv", "r") as file:
                 reader = csv.reader(file)
@@ -41,14 +42,14 @@ class RegistroWindow(QWidget):
                         return
         except FileNotFoundError:
             pass
-
+        '''
         # Guardar los datos de registro en el archivo CSV
         with open("registro_de_cuentas.csv", "a") as file:
             writer = csv.writer(file)
             writer.writerow([username, password])
 
         QMessageBox.information(self, "Registro exitoso", "La cuenta ha sido registrada con éxito")
-
+        self.close()
 
 # Ventana del Gerente
 class GerenteWindow(QWidget):
@@ -191,17 +192,21 @@ class TurnosApp(QMainWindow):
         password = self.password_input.text()
 
         # Verificar si el usuario y contraseña coinciden con los registros
-        try:
-            with open("registro_de_cuentas.csv", "r") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    if row[0] == username and row[1] == password:
-                        QMessageBox.information(self, "Inicio de Sesión Exitoso", "¡Bienvenido, {}!".format(username))
-                        return
-        except FileNotFoundError:
-            pass
-
-        QMessageBox.warning(self, "Error de inicio de sesión", "Usuario o contraseña incorrectos")
+        with open('registro_de_cuentas.csv',newline='') as cuentas:
+            reader = csv.DictReader(cuentas)
+            for row in reader:
+                print(row)
+                if username == row['logistica'] and password == row['abcd']:
+                    print("Inicio de sesión exitoso")
+                    self.open_logistica_window()
+                    break
+            else:
+                error_dialog = QMessageBox()
+                error_dialog.setIcon(QMessageBox.Icon.Critical)
+                error_dialog.setWindowTitle("Error de inicio de sesión")
+                error_dialog.setText("Usuario o contraseña incorrectos.")
+                print("Inicio de sesión fallido")
+                error_dialog.exec()
 
     def open_gerente_window(self):
         self.gerente_window = GerenteWindow()
