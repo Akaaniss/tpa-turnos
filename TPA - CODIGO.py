@@ -31,18 +31,6 @@ class RegistroWindow(QWidget):
         username = self.username_input.text()
         password = self.password_input.text()
 
-        # Verificar si el archivo "registro_de_cuentas.csv" existe
-        '''
-        try:
-            with open("registro_de_cuentas.csv", "r") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    if row[0] == username:
-                        QMessageBox.warning(self, "Error de registro", "El usuario ya existe")
-                        return
-        except FileNotFoundError:
-            pass
-        '''
         # Guardar los datos de registro en el archivo CSV
         with open("registro_de_cuentas.csv", "a", newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
@@ -194,6 +182,59 @@ class LogisticaWindow(QWidget):
 
 
 # Ventana de inicio de sesión
+class InicioSesionWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Inicio de Sesión")
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        # Campos de entrada de usuario y contraseña
+        self.username_input = QLineEdit()
+        self.layout.addWidget(QLabel("Usuario:"))
+        self.layout.addWidget(self.username_input)
+
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.layout.addWidget(QLabel("Contraseña:"))
+        self.layout.addWidget(self.password_input)
+
+        # Botón de inicio de sesión
+        self.login_button = QPushButton("Iniciar Sesión")
+        self.login_button.clicked.connect(self.login)
+        self.layout.addWidget(self.login_button)
+
+        # Botón de registro
+        self.register_button = QPushButton("Registrarse")
+        self.register_button.clicked.connect(self.open_registro_window)
+        self.layout.addWidget(self.register_button)
+
+    def login(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        # Verificar si el usuario y contraseña coinciden con los registros
+        with open('registro_de_cuentas.csv', newline='') as cuentas:
+            reader = csv.DictReader(cuentas)
+            for row in reader:
+                if username == row['Usuario'] and password == row['Contraseña']:
+                    print("Inicio de sesión exitoso")
+                    self.open_logistica_window()
+                    self.close()
+                    break
+            else:
+                error_dialog = QMessageBox()
+                error_dialog.setIcon(QMessageBox.Icon.Critical)
+                error_dialog.setWindowTitle("Error de inicio de sesión")
+                error_dialog.setText("Usuario o contraseña incorrectos.")
+                print("Inicio de sesión fallido")
+                error_dialog.exec()
+
+    def open_registro_window(self):
+        self.registro_window = RegistroWindow()
+        self.registro_window.show()
+
+
 class TurnosApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -219,53 +260,12 @@ class TurnosApp(QMainWindow):
         logistica_action.triggered.connect(self.open_logistica_window)
 
         # Crear la ventana de inicio de sesión
-        self.login_widget = QWidget()
-        self.login_layout = QVBoxLayout()
-        self.login_widget.setLayout(self.login_layout)
+        self.inicio_sesion_widget = InicioSesionWindow()
+        self.setCentralWidget(self.inicio_sesion_widget)
 
-        # Campo de entrada de usuario
-        self.username_input = QLineEdit()
-        self.login_layout.addWidget(QLabel("Usuario:"))
-        self.login_layout.addWidget(self.username_input)
-
-        # Campo de entrada de contraseña
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.login_layout.addWidget(QLabel("Contraseña:"))
-        self.login_layout.addWidget(self.password_input)
-
-        # Botón de inicio de sesión
-        self.login_button = QPushButton("Iniciar Sesión")
-        self.login_button.clicked.connect(self.login)
-        self.login_layout.addWidget(self.login_button)
-
-        # Botón de registro
-        self.register_button = QPushButton("Registrarse")
-        self.register_button.clicked.connect(self.open_registro_window)
-        self.login_layout.addWidget(self.register_button)
-
-        self.setCentralWidget(self.login_widget)
-
-    def login(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
-
-        # Verificar si el usuario y contraseña coinciden con los registros
-        with open('registro_de_cuentas.csv',newline='') as cuentas:
-            reader = csv.DictReader(cuentas)
-            for row in reader:
-                if username == row['logistica'] and password == row['abcd']:
-                    print("Inicio de sesión exitoso")
-                    self.open_logistica_window()
-                    self.close()
-                    break
-            else:
-                error_dialog = QMessageBox()
-                error_dialog.setIcon(QMessageBox.Icon.Critical)
-                error_dialog.setWindowTitle("Error de inicio de sesión")
-                error_dialog.setText("Usuario o contraseña incorrectos.")
-                print("Inicio de sesión fallido")
-                error_dialog.exec()
+    def open_inicio_sesion_window(self):
+        self.inicio_sesion_window = InicioSesionWindow()
+        self.inicio_sesion_window.show()
 
     def open_gerente_window(self):
         self.gerente_window = GerenteWindow()
@@ -278,10 +278,6 @@ class TurnosApp(QMainWindow):
     def open_logistica_window(self):
         self.logistica_window = LogisticaWindow()
         self.logistica_window.show()
-
-    def open_registro_window(self):
-        self.registro_window = RegistroWindow()
-        self.registro_window.show()
 
 
 if __name__ == "__main__":
