@@ -3,6 +3,7 @@ import re
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QLineEdit, QPushButton, QTableWidgetItem, QDateEdit, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt, QDate
 
+# Ventana del Encargado de Logística
 class LogisticaWindow(QWidget):
     def __init__(self):
         super().__init__()

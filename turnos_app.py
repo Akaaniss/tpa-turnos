@@ -7,11 +7,13 @@ from ejecutivo_window import EjecutivoWindow
 from logistica_window import LogisticaWindow
 import csv
 
+# Ventana de inicio de sesión
 class TurnosApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Turnos App")
         self.resize(800, 600)
+        self.login_window = None
 
         # Crear una barra de menú
         menu_bar = self.menuBar()
@@ -63,6 +65,9 @@ class TurnosApp(QMainWindow):
         username = self.username_input.text()
         password = self.password_input.text()
 
+        if self.login_window is not None:
+            self.login_window.close()
+
         # Verificar si el usuario y contraseña coinciden con los registros
         with open('registro_de_cuentas.csv', newline='') as cuentas:
             reader = csv.DictReader(cuentas)
@@ -93,8 +98,13 @@ class TurnosApp(QMainWindow):
         self.logistica_window.show()
 
     def open_registro_window(self):
-        self.registro_window = RegistroWindow()
+        self.login_widget.close()
+        self.registro_window = RegistroWindow(self)
         self.registro_window.show()
+        self.login_window = self.registro_window
+
+    def open_login_window(self):
+        self.login_widget.setVisible(True)
 
 
 if __name__ == "__main__":
