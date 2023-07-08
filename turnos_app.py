@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QLabel, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt
 from registro_window import RegistroWindow
 from gerente_window import GerenteWindow
@@ -12,7 +12,7 @@ class TurnosApp(QMainWindow):
         self.setWindowTitle("Turnos App")
         self.resize(800, 600)
 
-# Crear una barra de menú
+        # Crear una barra de menú
         menu_bar = self.menuBar()
 
         # Crear un menú "Rol" con opciones para el Gerente, Ejecutivo de Viaje y Encargado de Logística
