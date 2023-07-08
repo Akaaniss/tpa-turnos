@@ -5,6 +5,7 @@ from registro_window import RegistroWindow
 from gerente_window import GerenteWindow
 from ejecutivo_window import EjecutivoWindow
 from logistica_window import LogisticaWindow
+import csv
 
 class TurnosApp(QMainWindow):
     def __init__(self):
