@@ -100,6 +100,7 @@ class LogisticaWindow(QWidget):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Agregar los campos y botón a la interfaz
         self.layout.addWidget(QLabel("Nombre del Excursionista:"))
         self.layout.addWidget(self.nombre_input)
@@ -124,6 +125,10 @@ class LogisticaWindow(QWidget):
         # Cargar los turnos existentes desde el archivo CSV
         self.cargar_turnos()
 >>>>>>> parent of 1f6cd6b (update turnos)
+=======
+        # Cargar los turnos existentes desde el archivo CSV
+        self.cargar_turnos()
+>>>>>>> parent of 1f6cd6b (update turnos)
 
 >>>>>>> parent of 1f6cd6b (update turnos)
     def cargar_turnos(self):
@@ -141,6 +146,7 @@ class LogisticaWindow(QWidget):
             pass
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     def boton_eliminar(self):
         i = 1
         with open('turnos.csv', newline='') as file:
@@ -155,6 +161,8 @@ class LogisticaWindow(QWidget):
 >>>>>>> parent of 1f6cd6b (update turnos)
 =======
 >>>>>>> parent of 1f6cd6b (update turnos)
+=======
+>>>>>>> parent of 1f6cd6b (update turnos)
 
     def agregar_turno(self):
         nombre = self.nombre_input.text()
@@ -162,6 +170,7 @@ class LogisticaWindow(QWidget):
         fecha = self.fecha_input.date().toString(Qt.DateFormat.ISODate)
         plan = self.plan_input.currentText()
         turno = self.turno_input.currentText()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         boton_eliminar = QPushButton('Eliminar')
@@ -181,6 +190,8 @@ class LogisticaWindow(QWidget):
 >>>>>>> parent of 1f6cd6b (update turnos)
 =======
 >>>>>>> parent of 1f6cd6b (update turnos)
+=======
+>>>>>>> parent of 1f6cd6b (update turnos)
 
         self.guia_table.insertRow(self.guia_table.rowCount())
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 0, QTableWidgetItem(nombre))
@@ -190,7 +201,10 @@ class LogisticaWindow(QWidget):
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 4, QTableWidgetItem(turno))
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.guia_table.setCellWidget(self.guia_table.rowCount() - 1, 5, boton_eliminar)
+=======
+>>>>>>> parent of 1f6cd6b (update turnos)
 =======
 >>>>>>> parent of 1f6cd6b (update turnos)
 =======
@@ -200,6 +214,7 @@ class LogisticaWindow(QWidget):
         self.registro_window = RegistroWindow()
         self.registro_window.show()
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     def eliminar(self):
@@ -222,6 +237,8 @@ class LogisticaWindow(QWidget):
 
 >>>>>>> parent of 1f6cd6b (update turnos)
 =======
+=======
+>>>>>>> parent of 1f6cd6b (update turnos)
 
 >>>>>>> parent of 1f6cd6b (update turnos)
 # Ventana de inicio de sesión
