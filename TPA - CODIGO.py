@@ -83,6 +83,14 @@ class LogisticaWindow(QWidget):
         self.guia_table.setHorizontalHeaderLabels(["Nombre", "RUT", "Fecha", "Plan", "Turno"])
         self.layout.addWidget(self.guia_table)
 
+        self.eliminar_button = QPushButton("Eliminar Turno")
+        self.eliminar_button.clicked.connect(self.eliminar_turno)
+        self.layout.addWidget(self.eliminar_button)
+
+        # Configurar la selección de elementos en la tabla
+        self.guia_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.guia_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+
         # Campos de entrada de datos
         self.nombre_input = QLineEdit()
         self.rut_input = QLineEdit()
@@ -98,15 +106,28 @@ class LogisticaWindow(QWidget):
         self.agregar_button.clicked.connect(self.agregar_turno)
         self.layout.addWidget(self.agregar_button)
 
+        # Agregar los campos y botón a la interfaz
+        self.layout.addWidget(QLabel("Nombre del Excursionista:"))
+        self.layout.addWidget(self.nombre_input)
+        self.layout.addWidget(QLabel("RUT de la Persona:"))
+        self.layout.addWidget(self.rut_input)
+        self.layout.addWidget(QLabel("Fecha:"))
+        self.layout.addWidget(self.fecha_input)
+        self.layout.addWidget(QLabel("Tipo de Plan:"))
+        self.layout.addWidget(self.plan_input)
+        self.layout.addWidget(QLabel("Turno:"))
+        self.layout.addWidget(self.turno_input)
+        self.layout.addWidget(self.agregar_button)
+
         # Cargar los turnos existentes desde el archivo CSV
         self.cargar_turnos()
-
+        
     def cargar_turnos(self):
         self.guia_table.setRowCount(0)
 
-        # Verificar si el archivo "registro_de_cuentas.csv" existe
+        # Verificar si el archivo "turnos.csv" existe
         try:
-            with open("registro_de_cuentas.csv", "r") as file:
+            with open("turnos.csv", "r",encoding='latin-1') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     self.guia_table.insertRow(self.guia_table.rowCount())
@@ -122,6 +143,17 @@ class LogisticaWindow(QWidget):
         plan = self.plan_input.currentText()
         turno = self.turno_input.currentText()
 
+        if nombre != '' and rut != '':
+            with open('turnos.csv', 'a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([nombre,rut,fecha,plan,turno])
+        else:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error de datos ingresados")
+            error_dialog.setText("Por favor rellenar los campos antes de añadir un nuevo turno. ")
+            error_dialog.exec()
+
         self.guia_table.insertRow(self.guia_table.rowCount())
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 0, QTableWidgetItem(nombre))
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 1, QTableWidgetItem(rut))
@@ -129,12 +161,31 @@ class LogisticaWindow(QWidget):
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 3, QTableWidgetItem(plan))
         self.guia_table.setItem(self.guia_table.rowCount() - 1, 4, QTableWidgetItem(turno))
 
-    def open_registro_window(self):
-        self.registro_window = RegistroWindow()
-        self.registro_window.show()
+    def eliminar_turno(self):
+        selected_items = self.guia_table.selectedItems()
+        if selected_items:
+            rows = set()
+            for item in selected_items:
+                rows.add(item.row())
+
+            rows_to_keep = []
+            with open('turnos.csv', 'r', newline='', encoding='latin-1') as file:
+                reader = csv.reader(file)
+                for i, row in enumerate(reader):
+                    if i not in rows:
+                        rows_to_keep.append(row)
+
+            with open('turnos.csv', 'w', newline='', encoding='latin-1') as file:
+                writer = csv.writer(file)
+                writer.writerows(rows_to_keep)
+
+            self.cargar_turnos()
+        else:
+            QMessageBox.warning(self, "Eliminar Turno", "Selecciona al menos un turno para eliminar")
 
 
->>>>>>> parent of 1f6cd6b (update turnos)
+
+
 # Ventana de inicio de sesión
 class TurnosApp(QMainWindow):
     def __init__(self):
@@ -193,7 +244,7 @@ class TurnosApp(QMainWindow):
         password = self.password_input.text()
 
         # Verificar si el usuario y contraseña coinciden con los registros
-        with open('registro_de_cuentas.csv',newline='') as cuentas:
+        with open('registro_de_cuentas.csv', newline='') as cuentas:
             reader = csv.DictReader(cuentas)
             for row in reader:
                 print(row)
