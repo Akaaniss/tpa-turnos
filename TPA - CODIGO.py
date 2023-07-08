@@ -2,7 +2,7 @@ import sys
 import csv
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTableWidgetItem, QTableWidget, QDateEdit, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt, QDate
-
+import re
 
 # Ventana de Registro
 class RegistroWindow(QWidget):
@@ -121,13 +121,13 @@ class LogisticaWindow(QWidget):
 
         # Cargar los turnos existentes desde el archivo CSV
         self.cargar_turnos()
-        
+
     def cargar_turnos(self):
         self.guia_table.setRowCount(0)
 
         # Verificar si el archivo "turnos.csv" existe
         try:
-            with open("turnos.csv", "r",encoding='latin-1') as file:
+            with open("turnos.csv", "r", encoding='latin-1') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     self.guia_table.insertRow(self.guia_table.rowCount())
@@ -137,29 +137,66 @@ class LogisticaWindow(QWidget):
             pass
 
     def agregar_turno(self):
+        # Obtener el valor del campo de entrada de texto del nombre
         nombre = self.nombre_input.text()
+
+        # Verificar si el campo de entrada de texto del nombre está vacío
+        if nombre == '':
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error de datos ingresados")
+            error_dialog.setText("Por favor, ingresa un nombre antes de añadir un nuevo turno.")
+            error_dialog.exec()
+            return
+
         rut = self.rut_input.text()
         fecha = self.fecha_input.date().toString(Qt.DateFormat.ISODate)
         plan = self.plan_input.currentText()
         turno = self.turno_input.currentText()
 
+        while True:
+            # Verificar si el RUT tiene el formato correcto
+            if re.match(r'^(\d{1,2}\.)?\d{3}\.\d{3}-[0-9kK]$', rut):
+                break
+            else:
+                error_dialog = QMessageBox()
+                error_dialog.setIcon(QMessageBox.Icon.Critical)
+                error_dialog.setWindowTitle("Error de datos ingresados")
+                error_dialog.setText("El RUT ingresado es inválido. Por favor, inténtalo nuevamente.")
+                error_dialog.exec()
+                rut = self.rut_input.text()
+                return
+
+        # Formatear el RUT
+        if len(rut) == 9:
+            rut = f"{rut[0:2]}.{rut[2:5]}.{rut[5:8]}-{rut[8]}"
+        elif len(rut) == 10:
+            rut = f"{rut[0]}.{rut[1:4]}.{rut[4:7]}-{rut[7]}"
+        else:
+            # Aquí puedes manejar el caso si el RUT no tiene 8 o 9 cifras
+            pass
+
+        # Guardar los datos en el archivo CSV solo si el nombre y el RUT son válidos
         if nombre != '' and rut != '':
             with open('turnos.csv', 'a', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
-                writer.writerow([nombre,rut,fecha,plan,turno])
+                writer.writerow([nombre, rut, fecha, plan, turno])
         else:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Icon.Critical)
             error_dialog.setWindowTitle("Error de datos ingresados")
-            error_dialog.setText("Por favor rellenar los campos antes de añadir un nuevo turno. ")
+            error_dialog.setText("Por favor, rellena los campos antes de añadir un nuevo turno.")
             error_dialog.exec()
+            return
 
-        self.guia_table.insertRow(self.guia_table.rowCount())
-        self.guia_table.setItem(self.guia_table.rowCount() - 1, 0, QTableWidgetItem(nombre))
-        self.guia_table.setItem(self.guia_table.rowCount() - 1, 1, QTableWidgetItem(rut))
-        self.guia_table.setItem(self.guia_table.rowCount() - 1, 2, QTableWidgetItem(fecha))
-        self.guia_table.setItem(self.guia_table.rowCount() - 1, 3, QTableWidgetItem(plan))
-        self.guia_table.setItem(self.guia_table.rowCount() - 1, 4, QTableWidgetItem(turno))
+        # Insertar una nueva fila en la tabla y mostrar los datos ingresados
+        row_count = self.guia_table.rowCount()
+        self.guia_table.insertRow(row_count)
+        self.guia_table.setItem(row_count, 0, QTableWidgetItem(nombre))
+        self.guia_table.setItem(row_count, 1, QTableWidgetItem(rut))
+        self.guia_table.setItem(row_count, 2, QTableWidgetItem(fecha))
+        self.guia_table.setItem(row_count, 3, QTableWidgetItem(plan))
+        self.guia_table.setItem(row_count, 4, QTableWidgetItem(turno))
 
     def eliminar_turno(self):
         selected_items = self.guia_table.selectedItems()
