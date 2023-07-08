@@ -111,6 +111,10 @@ class LogisticaWindow(QWidget):
         self.turno_input = QComboBox()
         self.turno_input.addItems(["Mañana", "Tarde"])
 
+        # Configurar formato para el campo de entrada del RUT
+        self.rut_input =QLineEdit()
+        self.rut_input.setInputMask("xx.xxx.xxx-x")
+
         # Botón para agregar un turno
         self.agregar_button = QPushButton("Agregar Turno")
         self.agregar_button.clicked.connect(self.agregar_turno)
