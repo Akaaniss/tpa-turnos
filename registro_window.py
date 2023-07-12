@@ -1,5 +1,6 @@
 import sys
 import csv
+import os 
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
 from PyQt6.QtCore import Qt
 
@@ -8,7 +9,7 @@ class RegistroWindow(QWidget):
     def __init__(self, main_window):
         super().__init__()
         self.setWindowTitle("Registro")
-        self.resize(400, 300)
+        self.resize(400, 500)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         self.main_window = main_window
@@ -49,13 +50,16 @@ class RegistroWindow(QWidget):
         self.main_window.open_login_window()
 
     def registrar_cuenta(self):
+        excel = os.path.join(os.getcwd(), "registro_de_cuentas.csv")
         username = self.username_input.text()
         password = self.password_input.text()
 
         # Guardar los datos de registro en el archivo CSV
-        with open("registro_de_cuentas.csv", "a") as file:
-            writer = csv.writer(file)
-            writer.writerow([username, password])
+        with open(excel,'a', newline='', encoding='utf-8') as file:
+            fieldnames = ['logistica','abcd']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writerow({'logistica':username, 'abcd':password})
 
         QMessageBox.information(self, "Registro exitoso", "La cuenta ha sido registrada con éxito")
         self.close()
+        self.main_window.open_login_window()

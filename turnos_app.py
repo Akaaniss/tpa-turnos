@@ -1,11 +1,12 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QLabel, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QLabel, QVBoxLayout, QWidget, QMessageBox
 from PyQt6.QtCore import Qt
 from registro_window import RegistroWindow
 from gerente_window import GerenteWindow
 from ejecutivo_window import EjecutivoWindow
 from logistica_window import LogisticaWindow
 import csv
+import os 
 
 # Ventana de inicio de sesión
 class TurnosApp(QMainWindow):
@@ -62,6 +63,7 @@ class TurnosApp(QMainWindow):
         self.setCentralWidget(self.login_widget)
 
     def login(self):
+        excel = os.path.join(os.getcwd(), "registro_de_cuentas.csv")
         username = self.username_input.text()
         password = self.password_input.text()
 
@@ -69,10 +71,10 @@ class TurnosApp(QMainWindow):
             self.login_window.close()
 
         # Verificar si el usuario y contraseña coinciden con los registros
-        with open('registro_de_cuentas.csv', newline='') as cuentas:
-            reader = csv.DictReader(cuentas)
+        with open(excel, newline='') as cuentas:
+            fielnames = ['logistica','abcd']
+            reader = csv.DictReader(cuentas,fielnames)
             for row in reader:
-                print(row)
                 if username == row['logistica'] and password == row['abcd']:
                     print("Inicio de sesión exitoso")
                     self.open_logistica_window()

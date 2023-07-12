@@ -1,5 +1,6 @@
 import csv
 import re
+import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QLineEdit, QPushButton, QTableWidgetItem, QDateEdit, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt, QDate
 
@@ -8,6 +9,7 @@ class LogisticaWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Ventana del Encargado de Logística")
+        self.resize(500, 500)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
@@ -138,6 +140,7 @@ class LogisticaWindow(QWidget):
         self.guia_table.setItem(row_count, 4, QTableWidgetItem(turno))
 
     def eliminar_turno(self):
+        excel = os.path.join(os.getcwd(), "turnos.csv")
         selected_items = self.guia_table.selectedItems()
         if selected_items:
             rows = set()
@@ -145,13 +148,13 @@ class LogisticaWindow(QWidget):
                 rows.add(item.row())
 
             rows_to_keep = []
-            with open('turnos.csv', 'r', newline='', encoding='latin-1') as file:
+            with open(excel, 'r', newline='', encoding='latin-1') as file:
                 reader = csv.reader(file)
                 for i, row in enumerate(reader):
                     if i not in rows:
                         rows_to_keep.append(row)
 
-            with open('turnos.csv', 'w', newline='', encoding='latin-1') as file:
+            with open(excel, 'w', newline='', encoding='latin-1') as file:
                 writer = csv.writer(file)
                 writer.writerows(rows_to_keep)
 
